@@ -1,0 +1,130 @@
+---
+name: "GKE Manage"
+defaults:
+  run:
+    shell: bash
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Plan, Apply or Destroy"
+        type: string
+        default: plan
+        required: true
+  push:
+    paths:
+    - 'group_vars/*'
+    - 'host_vars/*'
+    - '**.yaml'
+    - '**.yml'
+env:
+  TF_IN_AUTOMATION: 'true'
+jobs:
+  config:
+    name: Generate configuration
+    runs-on: 'ubuntu-latest'
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+    - name: Install Python 3.8
+      run: sudo apt-get install -y python3.8
+    - name: Install Ansible 2.13
+      run: pip install "ansible-core<=2.13"
+    - name: Generate Terraform vars and Backend
+      run: ansible-playbook -i inventory.yml --limit ${{ github.ref_name }} preparing.yml
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-artifacts
+        path: structure/terraform/*
+        retention-days: 2
+  plan:
+    if: contains(fromJson('["plan", "apply"]'), github.event.inputs.action)
+    name: Terrafrom plan
+    runs-on: 'ubuntu-latest'
+    needs: config
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: terraform-artifacts
+        path: structure/terraform
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        token_format: 'access_token'
+        workload_identity_provider: projects/${{ vars.project_number }}/locations/global/workloadIdentityPools/${{ vars.workload_identity_pool_id }}/providers/${{ vars.workload_identity_pool_provider_id }}
+        service_account: '${{ vars.service_account }}@${{ vars.project_number }}.iam.gserviceaccount.com'
+        access_token_lifetime: '300s'
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.5
+        terraform_wrapper: false
+    - name: Terraform Init
+      run: terraform init -backend-config=config.gcs.tfbackend
+      working-directory: structure/terraform
+    - name: Terraform Plan
+      run: terraform plan -input=false -out plan.out -var="environment_dir=."
+      working-directory: structure/terraform
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-artifacts
+        path: structure/terraform/plan.out
+        retention-days: 2
+  apply:
+    if: github.event.inputs.action == 'apply'
+    name: Terrafrom apply
+    runs-on: 'ubuntu-latest'
+    needs: plan
+    environment:
+      name: ${{ github.ref_name }}
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: terraform-artifacts
+        path: structure/terraform
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.5
+        terraform_wrapper: false
+    - name: Terraform Init
+      run: terraform init -backend-config=config.gcs.tfbackend
+      working-directory: structure/terraform
+    - name: Terraform Apply
+      run: terraform apply -auto-approve -input=false plan.out
+      working-directory: structure/terraform
+  destroy:
+    if: github.event.inputs.action == 'destroy'
+    name: Terrafrom destroy
+    runs-on: [ self-hosted ]
+    needs: config
+    environment:
+      name: ${{ github.ref_name }}
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: terraform-artifacts
+        path: structure/terraform
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.5
+        terraform_wrapper: false
+    - name: Terraform Init
+      run: terraform init -backend-config=config.gcs.tfbackend
+      working-directory: structure/terraform
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve -input=false -var="environment_dir=."
+      working-directory: structure/terraform

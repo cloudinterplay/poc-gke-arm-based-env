@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  poc-gke-arm-based-env:
+    build: .
+    container_name: poc-gke-arm-based-env
+    hostname: poc-gke-arm-based-env
+    user: root
+    volumes:
+    - ~/.ssh:/root/.ssh:ro
+    - ~/.kube:/root/.kube
+    - ~/.config/gcloud/:/root/.config/gcloud
+    - ~/Documents/Automation/:/automation/
+    environment:
+    - LOGNAME=$LOGNAME
+    - USE_GKE_GCLOUD_AUTH_PLUGIN=True
+    command: sleep infinity

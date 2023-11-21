@@ -1,0 +1,7 @@
+---
+# Overridable variables for parameterizing environments
+gcp_project_id: "kubernetes-286419"
+# GCP parameters
+gcp:
+  project_id: "{{ gcp_project_id }}"
+  region: "us-central1"

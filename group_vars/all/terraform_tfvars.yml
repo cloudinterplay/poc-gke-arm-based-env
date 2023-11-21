@@ -1,0 +1,10 @@
+# Terraform TFVars
+terraform_tfvars:
+  gcp: "{{ gcp }}"
+  vpc: "{{ vpc }}"
+  gke: "{{ gke }}"
+  cert_manager: "{{ cert_manager_tfvars }}"
+  ingress_nginx_external: "{{ ingress_nginx_external_tfvars }}"
+  external_dns: "{{ external_dns_tfvars }}"
+  argocd: "{{ argocd_tfvars }}"
+  clusterIssuers: "{{ cert_manager_clusterIssuers }}"
