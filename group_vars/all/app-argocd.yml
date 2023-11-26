@@ -7,6 +7,10 @@ argocd_tfvars:
     version: "5.51.4"
     values_files:
     - helm_values_argocd.yml
+  applicationSet:
+    base:
+      name: base
+      repoURL: https://github.com/cloudinterplay/poc-gke-arm-based-apps.git
 # Auxiliary variables
 argocd_hostname: "{{ 'argocd' if inventory_hostname == 'main' else 'argocd-%s' | format(inventory_hostname) }}"
 # Helm Chart values
