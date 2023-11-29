@@ -5,15 +5,14 @@ cert_manager_tfvars:
   chart:
     repository: "https://charts.jetstack.io"
     version: "1.13.2"
-    values_files:
-    - helm_values_cert_manager.yml
+    values_file: helm_values_cert_manager.yml
 # Auxiliary variables
 cert_manager_clusterIssuers:
   letsencrypt-prod:
     acmeServer: "https://acme-v02.api.letsencrypt.org/directory"
     privateKeySecretRefName: "letsencrypt-prod"
     dnsZone: "{{ dns_zone }}"
-    project: "{{ gcp_project_id }}"
+    project: "{{ dns_project_id }}"
 # Helm Chart values
 cert_manager_helm_values:
   nodeSelector:
@@ -22,8 +21,6 @@ cert_manager_helm_values:
   ingressShim:
     defaultIssuerName: "letsencrypt-prod"
     defaultIssuerKind: "ClusterIssuer"
-  serviceAccount:
-    name: "cert-manager"
   tolerations: "{{ default_tolerations }}"
   webhook:
     tolerations: "{{ default_tolerations }}"

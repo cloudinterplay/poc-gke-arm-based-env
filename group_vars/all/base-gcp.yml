@@ -1,7 +1,9 @@
 ---
 # Overridable variables for parameterizing environments
-gcp_project_id: "kubernetes-286419"
+gke_project_id: "poc-gke-arm-based"
+dns_project_id: "kubernetes-286419"
 # GCP parameters
 gcp:
-  project_id: "{{ gcp_project_id }}"
+  gke_project_id: "{{ gke_project_id }}"
+  dns_project_id: "{{ dns_project_id }}"
   region: "us-central1"

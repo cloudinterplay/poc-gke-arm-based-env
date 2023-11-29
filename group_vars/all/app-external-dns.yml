@@ -5,12 +5,11 @@ external_dns_tfvars:
   chart:
     repository: "https://kubernetes-sigs.github.io/external-dns"
     version: "1.13.1"
-    values_files:
-    - helm_values_external_dns.yml
+    values_file: helm_values_external_dns.yml
 # Helm Chart values
 external_dns_helm_values:
-  serviceAccount:
-    name: "external-dns"
+  extraArgs:
+  - --google-project={{ dns_project_id }}
   provider: google
   domainFilters:
   - "{{ dns_zone }}"
