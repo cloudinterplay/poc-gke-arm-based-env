@@ -43,7 +43,7 @@ jobs:
         path: structure/terraform/*
         retention-days: 2
   plan:
-    if: github.event.inputs.action == plan
+    if: github.event.inputs.action == 'plan;
     needs: config
     uses: ./.github/workflows/workflow.yml
     with:
@@ -55,7 +55,7 @@ jobs:
     with:
       working-directory: "terraform"
   destroy:
-    if: github.event.inputs.action == destroy
+    if: github.event.inputs.action == 'destroy'
     needs: config
     uses: ./.github/workflows/workflow.yml
     with:
