@@ -47,16 +47,19 @@ jobs:
     needs: config
     uses: ./.github/workflows/workflow.yml
     with:
+      action: ${{ github.event.inputs.action }}
       working-directory: "structure/terraform"
   apply:
     if: github.event.inputs.action == 'apply'
     needs: plan
     uses: ./.github/workflows/workflow.yml
     with:
+      action: ${{ github.event.inputs.action }}
       working-directory: "structure/terraform"
   destroy:
     if: github.event.inputs.action == 'destroy'
     needs: config
     uses: ./.github/workflows/workflow.yml
     with:
+      action: ${{ github.event.inputs.action }}
       working-directory: "structure/terraform"
