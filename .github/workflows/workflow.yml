@@ -31,15 +31,15 @@ jobs:
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.5.5
-    - name: Terraform Init
-      run: terraform init -input=false
-      working-directory: ${{ inputs.working-directory }}
-    # Terraform plan/apply
+    # Terraform plan/apply/destroy
     - name: Download artifacts
       uses: actions/download-artifact@v3
       with:
         name: terraform-artifacts
         path: structure/terraform
+    - name: Terraform Init
+      run: terraform init -input=false -backend-config=config.gcs.tfbackend
+      working-directory: ${{ inputs.working-directory }}
     # Terraform plan
     - name: Terraform Plan
       if: github.event.inputs.action == 'plan'
