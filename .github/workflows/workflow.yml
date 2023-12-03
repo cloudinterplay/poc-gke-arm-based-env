@@ -15,7 +15,7 @@ env:
   TF_IN_AUTOMATION: yes
 jobs:
   terraform:
-    name: Terrafrom ${{ github.event.inputs.action }}
+    name: Terrafrom ${{ inputs.action }}
     permissions:
       id-token: 'write'
       contents: 'read'
