@@ -47,16 +47,16 @@ jobs:
     needs: config
     uses: ./.github/workflows/workflow.yml
     with:
-      working-directory: "terraform"
+      working-directory: "structure/terraform"
   apply:
     if: contains(fromJson('["plan", "apply"]'), github.event.inputs.action)
     needs: plan
     uses: ./.github/workflows/workflow.yml
     with:
-      working-directory: "terraform"
+      working-directory: "structure/terraform"
   destroy:
     if: github.event.inputs.action == 'destroy'
     needs: config
     uses: ./.github/workflows/workflow.yml
     with:
-      working-directory: "terraform"
+      working-directory: "structure/terraform"
