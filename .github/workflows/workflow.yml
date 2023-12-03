@@ -42,11 +42,11 @@ jobs:
         path: structure/terraform
     # Terraform plan
     - name: Terraform Plan
-      if: github.event.inputs.action == plan
+      if: github.event.inputs.action == 'plan'
       run: terraform plan -input=false -out=plan.tfplan -var="environment_dir=."
       working-directory: ${{ inputs.working-directory }}
     - name: Upload artifacts
-      if: github.event.inputs.action == plan
+      if: github.event.inputs.action == 'plan'
       uses: actions/upload-artifact@v3
       with:
         name: terraform-artifacts
@@ -55,9 +55,11 @@ jobs:
         retention-days: 2
     # Terraform apply
     - name: Terraform Apply
+      if: github.event.inputs.action == 'apply'
       run: terraform apply -auto-approve -input=false plan.out
       working-directory: ${{ inputs.working-directory }}
     # Terraform destroy
     - name: Terraform Destroy
+      if: github.event.inputs.action == 'destroy'
       run: terraform destroy -auto-approve -input=false -var="environment_dir=."
       working-directory: ${{ inputs.working-directory }}
