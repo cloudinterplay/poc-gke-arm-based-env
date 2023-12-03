@@ -1,0 +1,63 @@
+---
+name: "Global workflow"
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: "Working directory"
+        required: true
+        type: string
+env:
+  TF_IN_AUTOMATION: yes
+jobs:
+  terraform:
+    name: Terrafrom ${{ github.event.inputs.action }}
+    permissions:
+      id-token: 'write'
+      contents: 'read'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        token_format: 'access_token'
+        workload_identity_provider: projects/${{ vars.project_number }}/locations/global/workloadIdentityPools/${{ vars.workload_identity_pool_id }}/providers/${{ vars.workload_identity_pool_provider_id }}
+        service_account: '${{ vars.service_account }}@${{ vars.project_id }}.iam.gserviceaccount.com'
+        access_token_lifetime: '300s'
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.5
+    - name: Terraform Init
+      run: terraform init -input=false
+      working-directory: ${{ inputs.working-directory }}
+    # Terraform plan/apply
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: terraform-artifacts
+        path: structure/terraform
+    # Terraform plan
+    - name: Terraform Plan
+      if: github.event.inputs.action == plan
+      run: terraform plan -input=false -out=plan.tfplan -var="environment_dir=."
+      working-directory: ${{ inputs.working-directory }}
+    - name: Upload artifacts
+      if: github.event.inputs.action == plan
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-artifacts
+        path: ${{ inputs.working-directory }}/plan.tfplan
+        if-no-files-found: error
+        retention-days: 2
+    # Terraform apply
+    - name: Terraform Apply
+      run: terraform apply -auto-approve -input=false plan.out
+      working-directory: ${{ inputs.working-directory }}
+    # Terraform destroy
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve -input=false -var="environment_dir=."
+      working-directory: ${{ inputs.working-directory }}

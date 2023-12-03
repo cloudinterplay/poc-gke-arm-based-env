@@ -8,9 +8,12 @@ on:
     inputs:
       action:
         description: "Plan, Apply or Destroy"
-        type: string
         default: plan
-        required: true
+        type: choice
+        options:
+        - plan
+        - apply
+        - destroy
   push:
     paths:
     - 'group_vars/*'
@@ -40,95 +43,20 @@ jobs:
         path: structure/terraform/*
         retention-days: 2
   plan:
-    if: contains(fromJson('["plan", "apply"]'), github.event.inputs.action) || github.event_name == 'pull_request'
-    name: Terrafrom plan
-    permissions:
-      id-token: 'write'
-      contents: 'read'
-    runs-on: 'ubuntu-latest'
+    if: github.event.inputs.action == plan
     needs: config
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v3
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: terraform-artifacts
-        path: structure/terraform
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v1'
-      with:
-        token_format: 'access_token'
-        workload_identity_provider: projects/${{ vars.project_number }}/locations/global/workloadIdentityPools/${{ vars.workload_identity_pool_id }}/providers/${{ vars.workload_identity_pool_provider_id }}
-        service_account: '${{ vars.service_account }}@${{ vars.project_id }}.iam.gserviceaccount.com'
-        access_token_lifetime: '300s'
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.5.5
-        terraform_wrapper: false
-    - name: Terraform Init
-      run: terraform init -backend-config=config.gcs.tfbackend
-      working-directory: structure/terraform
-    - name: Terraform Plan
-      run: terraform plan -input=false -out plan.out -var="environment_dir=."
-      working-directory: structure/terraform
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: terraform-artifacts
-        path: structure/terraform/plan.out
-        retention-days: 2
+    uses: ./.github/workflows/workflow.yml
+    with:
+      working-directory: "terraform"
   apply:
-    if: github.event.inputs.action == 'apply'
-    name: Terrafrom apply
-    runs-on: 'ubuntu-latest'
+    if: contains(fromJson('["plan", "apply"]'), github.event.inputs.action)
     needs: plan
-    environment:
-      name: ${{ github.ref_name }}
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v3
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: terraform-artifacts
-        path: structure/terraform
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.5.5
-        terraform_wrapper: false
-    - name: Terraform Init
-      run: terraform init -backend-config=config.gcs.tfbackend
-      working-directory: structure/terraform
-    - name: Terraform Apply
-      run: terraform apply -auto-approve -input=false plan.out
-      working-directory: structure/terraform
+    uses: ./.github/workflows/workflow.yml
+    with:
+      working-directory: "terraform"
   destroy:
-    if: github.event.inputs.action == 'destroy'
-    name: Terrafrom destroy
-    runs-on: [ self-hosted ]
+    if: github.event.inputs.action == destroy
     needs: config
-    environment:
-      name: ${{ github.ref_name }}
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v3
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: terraform-artifacts
-        path: structure/terraform
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.5.5
-        terraform_wrapper: false
-    - name: Terraform Init
-      run: terraform init -backend-config=config.gcs.tfbackend
-      working-directory: structure/terraform
-    - name: Terraform Destroy
-      run: terraform destroy -auto-approve -input=false -var="environment_dir=."
-      working-directory: structure/terraform
+    uses: ./.github/workflows/workflow.yml
+    with:
+      working-directory: "terraform"
