@@ -60,7 +60,7 @@ jobs:
     # Terraform apply
     - name: Terraform Apply
       if: inputs.action == 'apply'
-      run: terraform apply -auto-approve -input=false plan.out
+      run: terraform apply -auto-approve -input=false plan.tfplan
       working-directory: ${{ inputs.working-directory }}
     # Terraform destroy
     - name: Terraform Destroy
