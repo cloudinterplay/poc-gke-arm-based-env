@@ -43,7 +43,7 @@ jobs:
         path: structure/terraform/*
         retention-days: 2
   plan:
-    if: contains(fromJson('["plan", "apply"]'), github.event.inputs.action)
+    if: contains(fromJson('["plan", "apply"]'), github.event.inputs.action) || github.event_name == 'push'
     needs: config
     uses: ./.github/workflows/workflow.yml
     with:
