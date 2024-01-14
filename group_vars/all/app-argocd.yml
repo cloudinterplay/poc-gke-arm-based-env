@@ -49,7 +49,7 @@ argocd_helm_values:
             orgs:
             - name: cloudinterplay
       oidc.config: |-
-        name: GitHub
+        name: GitHub-OIDC
         issuer: https://github.com/
         clientID: $github-oidc:clientId
         clientSecret: $github-oidc:clientSecret
