@@ -47,6 +47,8 @@ argocd_helm_values:
             clientSecret: $github-oauth:clientSecret
             orgs:
             - name: cloudinterplay
+      rbacConfig:
+        policy.csv: "{{ policy_csv }}"
     repositories:
       poc-gke-argocd-apps:
         url: https://github.com/cloudinterplay/poc-gke-argocd-apps.git
@@ -70,3 +72,5 @@ argocd_helm_values:
     tolerations: "{{ default_tolerations }}"
     nodeSelector:
       kubernetes.io/arch: arm64
+policy_csv: |-
+  g, cloudinterplay:Contributors, role:admin
