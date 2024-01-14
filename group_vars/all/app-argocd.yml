@@ -33,35 +33,34 @@ argocd_helm_values:
       - hosts:
         - "{{ argocd_hostname }}.{{ dns_zone }}"
         secretName: certificate-tls
-    config:
-      url: "https://{{ argocd_hostname }}.{{dns_zone}}"
-      cm:
-        admin.enabled: false
-        dex.config: |
-          connectors:
-          # GitHub example
-          - type: github
-            id: github
-            name: GitHub
-            config:
-              clientID: $github-oidc:clientId
-              clientSecret: $github-oidc:clientSecret
-              orgs:
-              - name: cloudinterplay
-        oidc.config: |
-          name: GitHub-OIDC
-          issuer: https://github.com/
-          clientID: $github-oidc:clientId
-          clientSecret: $github-oidc:clientSecret
-          requestedScopes:
-          - "openid"
-          - "profile"
-          - "email"
-          - "groups"
-          requestedIDTokenClaims:
-            groups:
-              essential: true
   configs:
+    cm:
+      url: "https://{{ argocd_hostname }}.{{dns_zone}}"
+      admin.enabled: false
+      dex.config: |
+        connectors:
+        # GitHub example
+        - type: github
+          id: github
+          name: GitHub
+          config:
+            clientID: $github-oidc:clientId
+            clientSecret: $github-oidc:clientSecret
+            orgs:
+            - name: cloudinterplay
+      oidc.config: |
+        name: GitHub-OIDC
+        issuer: https://github.com/
+        clientID: $github-oidc:clientId
+        clientSecret: $github-oidc:clientSecret
+        requestedScopes:
+        - "openid"
+        - "profile"
+        - "email"
+        - "groups"
+        requestedIDTokenClaims:
+          groups:
+            essential: true
     repositories:
       poc-gke-argocd-apps:
         url: https://github.com/cloudinterplay/poc-gke-argocd-apps.git
