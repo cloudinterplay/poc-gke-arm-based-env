@@ -13,8 +13,8 @@ on:
         type: string
 env:
   TF_IN_AUTOMATION: yes
-  TF_VAR_GITHUB_OAUTH_CLIENTID: ${{ secrets.GITHUB_OAUTH_CLIENTID }}
-  TF_VAR_GITHUB_OAUTH_CLIENTSECRET: ${{ secrets.GITHUB_OAUTH_CLIENTSECRET }}
+  TF_VAR_argocd_oauth_clientId: ${{ secrets.ARGOCD_OAUTH_CLIENTID }}
+  TF_VAR_argocd_oauth_clientSecret: ${{ secrets.ARGOCD_OAUTH_CLIENTSECRET }}
 jobs:
   terraform:
     name: Terrafrom ${{ inputs.action }}
