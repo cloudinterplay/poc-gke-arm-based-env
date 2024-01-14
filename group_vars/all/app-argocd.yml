@@ -37,30 +37,30 @@ argocd_helm_values:
       url: "https://{{ argocd_hostname }}.{{dns_zone}}"
       cm:
         admin.enabled: false
-      dex.config: |
-        connectors:
-        # GitHub example
-        - type: github
-          id: github
-          name: GitHub
-          config:
-            clientID: $github-oidc:clientId
-            clientSecret: $github-oidc:clientSecret
-            orgs:
-            - name: cloudinterplay
-      oidc.config: |-
-        name: GitHub-OIDC
-        issuer: https://github.com/
-        clientID: $github-oidc:clientId
-        clientSecret: $github-oidc:clientSecret
-        requestedScopes:
-        - "openid"
-        - "profile"
-        - "email"
-        - "groups"
-        requestedIDTokenClaims:
-          groups:
-            essential: true
+        dex.config: |
+          connectors:
+          # GitHub example
+          - type: github
+            id: github
+            name: GitHub
+            config:
+              clientID: $github-oidc:clientId
+              clientSecret: $github-oidc:clientSecret
+              orgs:
+              - name: cloudinterplay
+        oidc.config: |
+          name: GitHub-OIDC
+          issuer: https://github.com/
+          clientID: $github-oidc:clientId
+          clientSecret: $github-oidc:clientSecret
+          requestedScopes:
+          - "openid"
+          - "profile"
+          - "email"
+          - "groups"
+          requestedIDTokenClaims:
+            groups:
+              essential: true
   configs:
     repositories:
       poc-gke-argocd-apps:
