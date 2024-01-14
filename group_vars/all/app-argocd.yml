@@ -37,6 +37,17 @@ argocd_helm_values:
       url: "https://{{ argocd_hostname }}.{{dns_zone}}"
       cm:
         admin.enabled: false
+      dex.config: |
+        connectors:
+        # GitHub example
+        - type: github
+          id: github
+          name: GitHub
+          config:
+            clientID: $github-oidc:clientId
+            clientSecret: $github-oidc:clientSecret
+            orgs:
+            - name: cloudinterplay
       oidc.config: |-
         name: GitHub
         issuer: https://github.com/
@@ -59,7 +70,9 @@ argocd_helm_values:
     nodeSelector:
       kubernetes.io/arch: arm64
   dex:
-    enabled: false
+    tolerations: "{{ default_tolerations }}"
+    nodeSelector:
+      kubernetes.io/arch: arm64
   controller:
     tolerations: "{{ default_tolerations }}"
     nodeSelector:
