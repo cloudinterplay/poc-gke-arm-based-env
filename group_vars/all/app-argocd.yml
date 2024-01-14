@@ -39,7 +39,7 @@ argocd_helm_values:
         admin.enabled: false
       oidc.config: |-
         name: GitHub
-        issuer: https://github.com/login/oauth
+        issuer: https://github.com/
         clientID: $github-oidc:clientId
         clientSecret: $github-oidc:clientSecret
         requestedScopes:
