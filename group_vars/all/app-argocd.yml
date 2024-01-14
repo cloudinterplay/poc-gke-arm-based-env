@@ -35,6 +35,21 @@ argocd_helm_values:
         secretName: certificate-tls
     config:
       url: "https://{{ argocd_hostname }}.{{dns_zone}}"
+      cm:
+        admin.enabled: false
+      oidc.config: |-
+        name: GitHub
+        issuer: https://github.com/login/oauth/authorize
+        clientID: $github-oidc:clientId
+        clientSecret: $github-oidc:clientSecret
+        requestedScopes:
+        - "openid"
+        - "profile"
+        - "email"
+        - "groups"
+        requestedIDTokenClaims:
+          groups:
+            essential: true
   configs:
     repositories:
       poc-gke-argocd-apps:
@@ -44,9 +59,7 @@ argocd_helm_values:
     nodeSelector:
       kubernetes.io/arch: arm64
   dex:
-    tolerations: "{{ default_tolerations }}"
-    nodeSelector:
-      kubernetes.io/arch: arm64
+    enabled: false
   controller:
     tolerations: "{{ default_tolerations }}"
     nodeSelector:
