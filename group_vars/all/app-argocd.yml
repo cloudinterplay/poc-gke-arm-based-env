@@ -47,8 +47,8 @@ argocd_helm_values:
             clientSecret: $github-oauth:clientSecret
             orgs:
             - name: cloudinterplay
-      rbacConfig:
-        policy.csv: "{{ policy_csv }}"
+    rbac:
+      policy.csv: "{{ policy_csv }}"
     repositories:
       poc-gke-argocd-apps:
         url: https://github.com/cloudinterplay/poc-gke-argocd-apps.git
