@@ -4,7 +4,7 @@ argocd_tfvars:
   namespace: "argocd"
   chart:
     repository: "https://argoproj.github.io/argo-helm"
-    version: "5.51.4"
+    version: "5.52.1"
     values_files:
     - helm_values_argocd.yml
   applicationSet:
