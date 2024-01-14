@@ -39,28 +39,14 @@ argocd_helm_values:
       admin.enabled: false
       dex.config: |
         connectors:
-        # GitHub example
         - type: github
           id: github
           name: GitHub
           config:
-            clientID: $github-oidc:clientId
-            clientSecret: $github-oidc:clientSecret
+            clientID: $github-oauth:clientId
+            clientSecret: $github-oauth:clientSecret
             orgs:
             - name: cloudinterplay
-      # oidc.config: |
-      #   name: GitHub-OIDC
-      #   issuer: https://github.com/
-      #   clientID: $github-oidc:clientId
-      #   clientSecret: $github-oidc:clientSecret
-      #   requestedScopes:
-      #   - "openid"
-      #   - "profile"
-      #   - "email"
-      #   - "groups"
-      #   requestedIDTokenClaims:
-      #     groups:
-      #       essential: true
     repositories:
       poc-gke-argocd-apps:
         url: https://github.com/cloudinterplay/poc-gke-argocd-apps.git
