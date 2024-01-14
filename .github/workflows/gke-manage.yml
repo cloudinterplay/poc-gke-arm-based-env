@@ -49,6 +49,7 @@ jobs:
     with:
       action: 'plan'
       working-directory: "structure/terraform"
+    secrets: inherit
   apply:
     if: github.event.inputs.action == 'apply'
     needs: plan
@@ -56,6 +57,7 @@ jobs:
     with:
       action: 'apply'
       working-directory: "structure/terraform"
+    secrets: inherit
   destroy:
     if: github.event.inputs.action == 'destroy'
     needs: config
@@ -63,3 +65,4 @@ jobs:
     with:
       action: 'destroy'
       working-directory: "structure/terraform"
+    secrets: inherit
