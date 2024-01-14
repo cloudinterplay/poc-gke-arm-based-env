@@ -48,19 +48,19 @@ argocd_helm_values:
             clientSecret: $github-oidc:clientSecret
             orgs:
             - name: cloudinterplay
-      oidc.config: |
-        name: GitHub-OIDC
-        issuer: https://github.com/
-        clientID: $github-oidc:clientId
-        clientSecret: $github-oidc:clientSecret
-        requestedScopes:
-        - "openid"
-        - "profile"
-        - "email"
-        - "groups"
-        requestedIDTokenClaims:
-          groups:
-            essential: true
+      # oidc.config: |
+      #   name: GitHub-OIDC
+      #   issuer: https://github.com/
+      #   clientID: $github-oidc:clientId
+      #   clientSecret: $github-oidc:clientSecret
+      #   requestedScopes:
+      #   - "openid"
+      #   - "profile"
+      #   - "email"
+      #   - "groups"
+      #   requestedIDTokenClaims:
+      #     groups:
+      #       essential: true
     repositories:
       poc-gke-argocd-apps:
         url: https://github.com/cloudinterplay/poc-gke-argocd-apps.git
