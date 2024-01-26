@@ -21,6 +21,10 @@ ingress_nginx_external_helm_values:
     replicaCount: "1"
     service:
       externalTrafficPolicy: "Local"
+      ipFamilies:
+      - IPv6
+      annotations:
+        cloud.google.com/neg: '{"exposed_ports": {"80":{"name": "http"}, "443":{"name": "https"}}}'
     # -- For backwards compatibility with ingress.class annotation, use ingressClass.
     # Algorithm is as follows, first ingressClassName is considered, if not present, controller looks for ingress.class annotation
     ingressClass: "{{ ingress_nginx_external_ClassResource_name }}"

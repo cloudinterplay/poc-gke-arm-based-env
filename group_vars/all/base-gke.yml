@@ -16,6 +16,7 @@ gke:
     ip_allocation_policy:
       cluster_ipv4_cidr_block: "{{ gke_cluster_ipv4_cidr_block }}"
       services_ipv4_cidr_block: "{{ gke_services_ipv4_cidr_block }}"
+      stack_type: "IPV4_IPV6"
     master_authorized_networks_config:
       cidr_blocks:
       - cidr_block: "0.0.0.0/0"
